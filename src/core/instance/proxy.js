@@ -15,7 +15,8 @@ if (process.env.NODE_ENV !== 'production') {
     'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,' +
     'require' // for Webpack/Browserify
   )
-
+  
+  // 警告未定义
   const warnNonPresent = (target, key) => {
     warn(
       `Property or method "${key}" is not defined on the instance but ` +
@@ -43,6 +44,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   if (hasProxy) {
     const isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact')
+    // 对keyCodes写入条件限制，只允许isBuiltInModifier里面的key值才能写入
     config.keyCodes = new Proxy(config.keyCodes, {
       set (target, key, value) {
         if (isBuiltInModifier(key)) {
@@ -84,7 +86,7 @@ if (process.env.NODE_ENV !== 'production') {
       // determine which proxy handler to use
       const options = vm.$options
       const handlers = options.render && options.render._withStripped
-        ? getHandler
+        ?  
         : hasHandler
       vm._renderProxy = new Proxy(vm, handlers)
     } else {
