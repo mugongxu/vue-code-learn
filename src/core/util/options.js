@@ -26,6 +26,7 @@ import {
  * how to merge a parent option value and a child option
  * value into the final value.
  */
+// 选项覆盖策略是处理如何将父选项值和子选项值合并到最终值的函数。
 const strats = config.optionMergeStrategies
 
 /**
@@ -270,6 +271,7 @@ const defaultStrat = function (parentVal: any, childVal: any): any {
 /**
  * Validate component names
  */
+// 判断是否有效的组件名称
 function checkComponents (options: Object) {
   for (const key in options.components) {
     validateComponentName(key)
@@ -277,12 +279,16 @@ function checkComponents (options: Object) {
 }
 
 export function validateComponentName (name: string) {
+  // 应该符合HTML5规范中的有效自定义元素名称。
   if (!new RegExp(`^[a-zA-Z][\\-\\.0-9_${unicodeRegExp.source}]*$`).test(name)) {
     warn(
       'Invalid component name: "' + name + '". Component names ' +
       'should conform to valid custom element name in html5 specification.'
     )
   }
+  // isBuiltInTag：判断是否slot,component中的一个（无论大小写）
+  // isReservedTag：false
+  // 不要将内置或保留的HTML元素用作组件
   if (isBuiltInTag(name) || config.isReservedTag(name)) {
     warn(
       'Do not use built-in or reserved HTML elements as component ' +
@@ -295,6 +301,7 @@ export function validateComponentName (name: string) {
  * Ensure all props option syntax are normalized into the
  * Object-based format.
  */
+// 确保所有props选项语法都规范化为基于对象的格式。
 function normalizeProps (options: Object, vm: ?Component) {
   const props = options.props
   if (!props) return
@@ -304,17 +311,21 @@ function normalizeProps (options: Object, vm: ?Component) {
     i = props.length
     while (i--) {
       val = props[i]
+      // 必须为字符串
       if (typeof val === 'string') {
+        // 转成驼峰式写法
         name = camelize(val)
         res[name] = { type: null }
       } else if (process.env.NODE_ENV !== 'production') {
         warn('props must be strings when using array syntax.')
       }
     }
-  } else if (isPlainObject(props)) {
+  } else if (isPlainObject(props)) { // 检查是否为对象
     for (const key in props) {
       val = props[key]
       name = camelize(key)
+      // 判断值是否为对象
+      // 因为props可能为：key: String 或者 key: { type: String, default: '' }
       res[name] = isPlainObject(val)
         ? val
         : { type: val }
@@ -332,17 +343,20 @@ function normalizeProps (options: Object, vm: ?Component) {
 /**
  * Normalize all injections into Object-based format
  */
+// 将所有依赖注入规范化为基于对象的格式
 function normalizeInject (options: Object, vm: ?Component) {
   const inject = options.inject
   if (!inject) return
   const normalized = options.inject = {}
   if (Array.isArray(inject)) {
     for (let i = 0; i < inject.length; i++) {
+      // 依赖注入基本格式key: { from: injectProvide }
       normalized[inject[i]] = { from: inject[i] }
     }
   } else if (isPlainObject(inject)) {
     for (const key in inject) {
       const val = inject[key]
+      // 因为inject基本格式：inject: ['key1', 'key2']或inject: { key1: provide1, key2: provide2 }或inject: { key1: { from: provide1 } }
       normalized[key] = isPlainObject(val)
         ? extend({ from: key }, val)
         : { from: val }
@@ -359,12 +373,14 @@ function normalizeInject (options: Object, vm: ?Component) {
 /**
  * Normalize raw function directives into object format.
  */
+// 将原始函数指令规范化为对象格式。
 function normalizeDirectives (options: Object) {
   const dirs = options.directives
   if (dirs) {
     for (const key in dirs) {
       const def = dirs[key]
       if (typeof def === 'function') {
+        // 确保directives指令，含有bind和update两个钩子函数
         dirs[key] = { bind: def, update: def }
       }
     }
@@ -385,38 +401,49 @@ function assertObjectType (name: string, value: any, vm: ?Component) {
  * Merge two option objects into a new one.
  * Core utility used in both instantiation and inheritance.
  */
+// 合并两个option为一个新的对象
+// 用于实例化和继承的核心实用程序。
 export function mergeOptions (
   parent: Object,
   child: Object,
   vm?: Component
 ): Object {
   if (process.env.NODE_ENV !== 'production') {
+    // 对子类组件命名进行检查
     checkComponents(child)
   }
 
   if (typeof child === 'function') {
     child = child.options
   }
-
+  // 规范化props
   normalizeProps(child, vm)
+  // 规范化inject
   normalizeInject(child, vm)
+  // 规范化directives
   normalizeDirectives(child)
 
   // Apply extends and mixins on the child options,
   // but only if it is a raw options object that isn't
   // the result of another mergeOptions call.
   // Only merged options has the _base property.
+  // 在子option上存在extends和mixins
+  // 但仅当它不是另一个MergeOptions调用的结果的原始选项对象时
+  // 只有合并的选项才具有_base属性。
   if (!child._base) {
     if (child.extends) {
+      // 合并extends
       parent = mergeOptions(parent, child.extends, vm)
     }
     if (child.mixins) {
+      // 合并多个mixins
       for (let i = 0, l = child.mixins.length; i < l; i++) {
         parent = mergeOptions(parent, child.mixins[i], vm)
       }
     }
   }
-
+  
+  // 针对不同的键值，采用不同的merge策略
   const options = {}
   let key
   for (key in parent) {

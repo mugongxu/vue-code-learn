@@ -9,6 +9,7 @@ import { warn, makeMap, isNative } from '../util/index'
 let initProxy
 
 if (process.env.NODE_ENV !== 'production') {
+  // 全局变量
   const allowedGlobals = makeMap(
     'Infinity,undefined,NaN,isFinite,isNaN,' +
     'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
@@ -27,7 +28,8 @@ if (process.env.NODE_ENV !== 'production') {
       target
     )
   }
-
+  
+  // 警告保留前缀
   const warnReservedPrefix = (target, key) => {
     warn(
       `Property "${key}" must be accessed with "$data.${key}" because ` +
@@ -43,8 +45,9 @@ if (process.env.NODE_ENV !== 'production') {
     typeof Proxy !== 'undefined' && isNative(Proxy)
 
   if (hasProxy) {
+    // 保留字段
     const isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact')
-    // 对keyCodes写入条件限制，只允许isBuiltInModifier里面的key值才能写入
+    // 对keyCodes写入条件限制，只允许不在isBuiltInModifier里面的key值才能写入
     config.keyCodes = new Proxy(config.keyCodes, {
       set (target, key, value) {
         if (isBuiltInModifier(key)) {

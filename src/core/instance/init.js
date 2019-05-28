@@ -111,17 +111,21 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
+  // 如果有父级
   if (Ctor.super) {
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
-    if (superOptions !== cachedSuperOptions) { // 如果伏击options有变化
+    if (superOptions !== cachedSuperOptions) { // 如果父级options有变化
       // super option changed,
       // need to resolve new options.
+      // 更新缓存
       Ctor.superOptions = superOptions
       // check if there are any late-modified/attached options (#4976)
+      // 获取值不同的项组合
       const modifiedOptions = resolveModifiedOptions(Ctor)
       // update base extend options
       if (modifiedOptions) {
+        // 更新值
         extend(Ctor.extendOptions, modifiedOptions)
       }
       options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)

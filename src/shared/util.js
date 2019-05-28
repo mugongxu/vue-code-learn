@@ -55,6 +55,7 @@ export function toRawType (value: any): string {
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
  */
+// 严格的对象类型检查。对于普通的javascript对象，只返回true。
 export function isPlainObject (obj: any): boolean {
   return _toString.call(obj) === '[object Object]'
 }
@@ -151,6 +152,7 @@ export function hasOwn (obj: Object | Array<*>, key: string): boolean {
 /**
  * Create a cached version of a pure function.
  */
+// 创建纯函数的缓存版本。
 export function cached<F: Function> (fn: F): F {
   const cache = Object.create(null)
   return (function cachedFn (str: string) {
@@ -162,6 +164,7 @@ export function cached<F: Function> (fn: F): F {
 /**
  * Camelize a hyphen-delimited string.
  */
+// 将以连字符分隔的字符驼峰式写法。
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str: string): string => {
   return str.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '')
