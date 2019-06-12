@@ -208,6 +208,7 @@ export function mountComponent (
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
     vm._isMounted = true
+    // 触发mounted钩子函数
     callHook(vm, 'mounted')
   }
   return vm
