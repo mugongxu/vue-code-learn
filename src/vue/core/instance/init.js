@@ -45,8 +45,9 @@ export function initMixin (Vue: Class<Component>) {
       // 优化内部组件实例化，因为动态选项合并非常慢，而且没有任何内部组件选项（options）需要特殊处理。
       initInternalComponent(vm, options)
     } else {
+      console.log('options', Vue.options);
       vm.$options = mergeOptions(
-        resolveConstructorOptions(vm.constructor),
+        resolveConstructorOptions(vm.constructor), // 返回Vue.options
         options || {},
         vm
       )
@@ -54,6 +55,7 @@ export function initMixin (Vue: Class<Component>) {
     /* istanbul ignore else */
     // 第二步：renderProxy
     if (process.env.NODE_ENV !== 'production') {
+      // 开发环境，对vm的对象进行代理，即赋值、获取控制
       initProxy(vm)
     } else {
       vm._renderProxy = vm
@@ -61,7 +63,7 @@ export function initMixin (Vue: Class<Component>) {
     // expose real self
     // 暴露真正的自己
     vm._self = vm
-    // 第三步：vm的生命周期相关变量初始化
+    // 第三步：vm的生命周期相关属性初始化
     initLifecycle(vm)
     // 第四步：vm时间监听初始化
     initEvents(vm)
@@ -111,7 +113,7 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
-  // 如果有父级
+  // 如果有父级(即实例中有没有进行继承操作)
   if (Ctor.super) {
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions

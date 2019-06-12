@@ -61,6 +61,7 @@ if (process.env.NODE_ENV !== 'production') {
     })
   }
 
+  // 判断对象是否有某个属性时拦截，典型的操作就是in运算符
   const hasHandler = {
     has (target, key) {
       const has = key in target
@@ -74,6 +75,7 @@ if (process.env.NODE_ENV !== 'production') {
     }
   }
 
+  // 用于拦截某个属性的读取操作
   const getHandler = {
     get (target, key) {
       if (typeof key === 'string' && !(key in target)) {
@@ -91,6 +93,9 @@ if (process.env.NODE_ENV !== 'production') {
       const handlers = options.render && options.render._withStripped
         ? getHandler
         : hasHandler
+      // handler有get、set、apply、has、construct、deleteProperty、
+      // defineProperty、getOwnPropertyDescriptor、getPrototype、isExtensible、
+      // ownKeys、preventExtensions、setPrototypeOf
       vm._renderProxy = new Proxy(vm, handlers)
     } else {
       vm._renderProxy = vm

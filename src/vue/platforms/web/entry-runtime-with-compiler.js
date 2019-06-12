@@ -8,6 +8,7 @@ import { warn, cached } from 'core/util/index'
 import { mark, measure } from 'core/util/perf'
 
 import Vue from './runtime/index'
+// 获取标签对象
 import { query } from './util/index'
 import { compileToFunctions } from './compiler/index'
 import { shouldDecodeNewlines, shouldDecodeNewlinesForHref } from './util/compat'

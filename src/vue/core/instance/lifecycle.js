@@ -164,6 +164,7 @@ export function mountComponent (
       }
     }
   }
+  // 触发beforeMount钩子函数
   callHook(vm, 'beforeMount')
 
   let updateComponent
